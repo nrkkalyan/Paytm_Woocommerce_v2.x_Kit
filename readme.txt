@@ -10,8 +10,8 @@ Allows you to use paytm payment gateway with the WooCommerce plugin.
 This plugin is used to integrate paytm payment gateway with woocommerce.
 
 == Installation ==
-1. Ensure you have latest version of WooCommerce plugin installed
-2. Unzip and upload contents of the plugin to your /wp-content/plugins/ directory.
+1. Ensure you have latest version of WooCommerce plugin installed.
+2. Copy the folder named "paytm" into the directory location /wp-content/plugins/ .
 3. Activate the plugin through the left side 'Plugins' menu in WordPress.
 
 
