@@ -1,6 +1,6 @@
 # Description
 
-This plugin is used to integrate Paytm payment gateway with Woocommerce.
+This plugin is used to integrate Paytm payment gateway with Woocommerce for Wordpress version 4.x.
 
 # Installation
  1. Ensure you have latest version of WooCommerce plugin installed.
