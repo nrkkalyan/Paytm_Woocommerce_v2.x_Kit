@@ -22,10 +22,10 @@ function woocommerce_paytm_init() {
      */
     load_plugin_textdomain('wc-paytm', false, dirname( plugin_basename( __FILE__ ) ) . '/languages');
     if($_GET['msg']!=''){
-        add_action('the_content', 'showMessage');
+        add_action('the_content', 'paytmShowMessage');
     }
    
-     function showMessage($content){
+     function paytmShowMessage($content){
             return '<div class="box '.htmlentities($_GET['type']).'-box">'.htmlentities(urldecode($_GET['msg'])).'</div>'.$content;
     }
     /**
@@ -266,7 +266,7 @@ $redirect_url = $order->get_checkout_order_received_url();
 					$order -> add_order_note($this->msg['message']);
 				
 				}
-				add_action('the_content', array(&$this, 'showMessage'));
+				add_action('the_content', array(&$this, 'paytmShowMessage'));
 				
 				//$redirect_url = ($this -> redirect_page_id=="" || $this -> redirect_page_id==0)?get_site_url() . "/":get_permalink($this -> redirect_page_id);
 $redirect_url = $order->get_checkout_order_received_url();
