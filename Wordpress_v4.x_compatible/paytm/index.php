@@ -51,6 +51,7 @@ function woocommerce_paytm_init() {
 			$this -> website = $this -> settings['website'];
             $this -> redirect_page_id = $this -> settings['redirect_page_id'];
 			$this -> mode = $this -> settings['mode'];
+			$this -> callbackurl = $this -> settings['callbackurl'];
 			$this -> log = $this -> settings['log'];
 			//$this -> liveurl = "https:/api.paytm.com/transact?v=2";
             $this -> msg['message'] = "";
@@ -99,6 +100,11 @@ function woocommerce_paytm_init() {
                     'type' => 'text',
                     'description' =>  __('Given to Merchant by paytm'),
 					),
+				'callbackurl' => array(
+					'title' => __('Set CallBack URL'),
+					'type' => 'checkbox',
+					'label' => __('Enable Call back URL.'),
+					'default' => 'yes'),
                 'gateway_url' => array(
                     'title' => __('Gateway URL'),
                     'type' => 'text',
@@ -341,7 +347,10 @@ $redirect_url = $order->get_checkout_order_received_url();
             "INDUSTRY_TYPE_ID" => $this -> industry_type,
             "WEBSITE" => $this -> website
             );
-
+			if($this -> callbackurl=='yes')
+			{
+				$post_variables["CALLBACK_URL"] = get_site_url() . '/?page_id=7&wc-api=WC_paytm';
+			}
 			$all = '';
 			foreach($post_variables as $name => $value) {
 			if($name != 'checksum') {
@@ -420,6 +429,13 @@ $redirect_url = $order->get_checkout_order_received_url();
 			$paytm_args_array[] = "<input type='hidden' name='CHANNEL_ID' value='". $this -> channel_id ."'/>";
 			$paytm_args_array[] = "<input type='hidden' name='TXN_AMOUNT' value='". $amt ."'/>";
 			$paytm_args_array[] = "<input type='hidden' name='CUST_ID' value='". $order -> billing_first_name ."'/>";
+			
+			if($this -> callbackurl=='yes')
+				{
+					$call = get_site_url() . '/?page_id=7&wc-api=WC_paytm';
+					$paytm_args_array[] = "<input type='hidden' name='CALLBACK_URL' value='" . $call . "'/>";
+				}
+			
 			$paytm_args_array[] = "<input type='hidden' name='txnDate' value='". date('Y-m-d H:i:s') ."'/>";
 			$paytm_args_array[] = "<input type='hidden' name='CHECKSUMHASH' value='". $checksum ."'/>";
 
