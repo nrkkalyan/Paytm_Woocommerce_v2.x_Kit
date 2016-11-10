@@ -132,17 +132,18 @@ function woocommerce_paytm_init() {
                     'description' => "URL of success page"
                 ),
 				'mode' => array(
-                    'title' => __('Mode'),
-                    'type' => 'text',
-                    'options' => 'text',
-                    'description' => "Mode of transaction. (1=LIVE, 0=TEST)"
-                ),
+					'title' => __('Enable Test Mode'),
+					'type' => 'checkbox',
+					'label' => __('Select to enable Sandbox Enviroment'),
+					'description' => "Unchecked means in Production Enviroment",
+					'default' => 'no'                   
+				),
 				'log' => array(
-                    'title' => __('Do you want to log'),
-                    'type' => 'text',
-                    'options' => 'text',
-                    'description' => "(yes/no)"
-                )
+					'title' => __('Do you want to log'),
+					'type' => 'checkbox',
+					'label' => __('Select to enable Log'),
+					'default' => "no"
+				)
             );
 
 
@@ -202,7 +203,10 @@ function woocommerce_paytm_init() {
 				} else {
 					$order = new woocommerce_order($_REQUEST['ORDERID']);
 				}
-				if($this -> log == "yes"){error_log("Response Code = " . $_REQUEST['RESPCODE']);}
+				if($this -> log == "yes")
+					{
+						error_log("Response Code = " . $_REQUEST['RESPCODE']);
+					}
 			  //  $redirect_url = ($this -> redirect_page_id=="" || $this -> redirect_page_id==0)?get_site_url() . "/":get_permalink($this -> redirect_page_id);
 $redirect_url = $order->get_checkout_order_received_url();
 				$this -> msg['class'] = 'error';
@@ -438,7 +442,14 @@ $redirect_url = $order->get_checkout_order_received_url();
 			
 			$paytm_args_array[] = "<input type='hidden' name='txnDate' value='". date('Y-m-d H:i:s') ."'/>";
 			$paytm_args_array[] = "<input type='hidden' name='CHECKSUMHASH' value='". $checksum ."'/>";
-
+			if($this -> mode=='yes')
+			{
+				$gateway_url = 'https://pguat.paytm.com/oltp-web/processTransaction';
+			}
+			else
+			{
+				$gateway_url = 'https://secure.paytm.in/oltp-web/processTransaction';
+			}
             return '<form action="'.$this -> gateway_url.'" method="post" id="paytm_payment_form">
                 ' . implode('', $paytm_args_array) . '
                 <input type="submit" class="button-alt" id="submit_paytm_payment_form" value="'.__('Pay via paytm').'" /> <a class="button cancel" href="'.$order->get_cancel_order_url().'">'.__('Cancel order &amp; restore cart').'</a>
