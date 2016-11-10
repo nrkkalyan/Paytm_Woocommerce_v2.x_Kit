@@ -450,7 +450,7 @@ $redirect_url = $order->get_checkout_order_received_url();
 			{
 				$gateway_url = 'https://secure.paytm.in/oltp-web/processTransaction';
 			}
-            return '<form action="'.$this -> gateway_url.'" method="post" id="paytm_payment_form">
+            return '<form action="'.$gateway_url.'" method="post" id="paytm_payment_form">
                 ' . implode('', $paytm_args_array) . '
                 <input type="submit" class="button-alt" id="submit_paytm_payment_form" value="'.__('Pay via paytm').'" /> <a class="button cancel" href="'.$order->get_cancel_order_url().'">'.__('Cancel order &amp; restore cart').'</a>
                 <script type="text/javascript">
