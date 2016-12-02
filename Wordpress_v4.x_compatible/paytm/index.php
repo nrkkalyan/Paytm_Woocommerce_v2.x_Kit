@@ -45,7 +45,7 @@ function woocommerce_paytm_init() {
             $this -> description = $this -> settings['description'];
             $this -> merchantIdentifier = $this -> settings['merchantIdentifier'];
             $this -> secret_key = $this -> settings['secret_key'];            
-			$this -> gateway_url = $this -> settings['gateway_url'];
+			//$this -> gateway_url = $this -> settings['gateway_url'];
 			$this -> industry_type = $this -> settings['industry_type'];
 			$this -> channel_id = $this -> settings['channel_id'];
 			$this -> website = $this -> settings['website'];
@@ -105,11 +105,11 @@ function woocommerce_paytm_init() {
 					'type' => 'checkbox',
 					'label' => __('Enable Call back URL.'),
 					'default' => 'yes'),
-                'gateway_url' => array(
+                /* 'gateway_url' => array(
                     'title' => __('Gateway URL'),
                     'type' => 'text',
                     'description' =>  __('Given to Merchant by paytm'),
-					),
+					), */
 				'industry_type' => array(
                     'title' => __('Industry Type'),
                     'type' => 'text',
