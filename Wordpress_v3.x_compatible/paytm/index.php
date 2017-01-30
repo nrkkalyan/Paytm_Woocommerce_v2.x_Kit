@@ -3,8 +3,8 @@
 /*
 Plugin Name: WooCommerce paytm gateway
 Plugin URI: http://paytm.com/
-Description: Used to integrate the paytm payment gateway with your website.
-Version: 0.1
+Description: Paytm Payment Gateway with Check Status.
+Version: 0.2
 Author: Paytm
 
 
@@ -228,21 +228,46 @@ function woocommerce_paytm_init() {
 				        $bool = verifychecksum_e($paramList, $this -> secret_key, $checksum_recv);
 						//$newcheck = Checksum::calculateChecksum($this->secret_key, $all);
 						if($this -> log == "yes"){error_log("calculated checksum = " . $newch . " and checksum received = " . $_POST['CHECKSUMHASH']);}
-                        if ($bool == "TRUE") {							
-							if($order -> status !=='completed'){
-							    error_log("SUCCESS");
-								$this -> msg['message'] = "Thank you for your order . Your transaction has been successful.";
-								$this -> msg['class'] = 'success';
-								if($order -> status == 'processing'){
+                        if ($bool == "TRUE") {
+							// Create an array having all required parameters for status query.
+							$requestParamList = array("MID" => $this -> merchantIdentifier , "ORDERID" => $order_sent);
+							
+							// Call the PG's getTxnStatus() function for verifying the transaction status.
+							
+							if($this -> mode==0)
+							{
+								$check_status_url = 'https://pguat.paytm.com/oltp/HANDLER_INTERNAL/TXNSTATUS';
+							}
+							else
+							{
+								$check_status_url = 'https://secure.paytm.in/oltp/HANDLER_INTERNAL/TXNSTATUS';
+							}
+							$responseParamList = callAPI($check_status_url, $requestParamList);
+							if($responseParamList['STATUS']=='TXN_SUCCESS' && $responseParamList['TXNAMOUNT']==$order_amount)
+							{
+								if($order -> status !=='completed'){
+									error_log("SUCCESS");
+									$this -> msg['message'] = "Thank you for your order . Your transaction has been successful.";
+									$this -> msg['class'] = 'success';
+									if($order -> status == 'processing'){
 
-								} else {
-									$order -> payment_complete();
-									$order -> add_order_note('Mobile Wallet payment successful');
-									$order -> add_order_note($this->msg['message']);
-									$woocommerce -> cart -> empty_cart();
+									} else {
+										$order -> payment_complete();
+										$order -> add_order_note('Mobile Wallet payment successful');
+										$order -> add_order_note($this->msg['message']);
+										$woocommerce -> cart -> empty_cart();
 
+									}
 								}
-							}						
+							}
+							else
+							{
+								$this -> msg['class'] = 'error';
+								$this -> msg['message'] = "Order Mismatch Occur";
+								$order -> update_status('failed');
+								$order -> add_order_note('Failed');
+								$order -> add_order_note($this->msg['message']);
+							}
 						}
 						else{
 							// server to server failed while call//
