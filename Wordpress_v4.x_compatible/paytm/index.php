@@ -367,6 +367,21 @@ $redirect_url = $order->get_checkout_order_received_url();
 			"txnDate" => $txnDate
 
 			);*/
+			
+			$email = '';
+			$mobile_no = '';
+			
+			try{
+				$email = $order -> billing_email;
+			}catch(Exception $e){
+			
+			}
+			
+			try{
+				$mobile_no = preg_replace('#[^0-9]{0,13}#is','',$order -> billing_phone);
+			}catch(Exception $e){
+			
+			}
 
 			$post_variables = Array(
             "MID" => $this -> merchantIdentifier,
@@ -375,7 +390,9 @@ $redirect_url = $order->get_checkout_order_received_url();
             "TXN_AMOUNT" => $amt,
             "CHANNEL_ID" => $this -> channel_id,
             "INDUSTRY_TYPE_ID" => $this -> industry_type,
-            "WEBSITE" => $this -> website
+            "WEBSITE" => $this -> website,
+			"EMAIL" => $email,
+			"MOBILE_NO" => $mobile_no
             );
 			if($this -> callbackurl=='yes')
 			{
@@ -459,6 +476,8 @@ $redirect_url = $order->get_checkout_order_received_url();
 			$paytm_args_array[] = "<input type='hidden' name='CHANNEL_ID' value='". $this -> channel_id ."'/>";
 			$paytm_args_array[] = "<input type='hidden' name='TXN_AMOUNT' value='". $amt ."'/>";
 			$paytm_args_array[] = "<input type='hidden' name='CUST_ID' value='". $order -> billing_first_name ."'/>";
+			$paytm_args_array[] = "<input type='hidden' name='EMAIL' value='". $email ."'/>";
+			$paytm_args_array[] = "<input type='hidden' name='MOBILE_NO' value='". $mobile_no ."'/>";
 			
 			if($this -> callbackurl=='yes')
 				{
