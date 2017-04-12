@@ -236,17 +236,21 @@ $redirect_url = $order->get_checkout_order_received_url();
 							// Create an array having all required parameters for status query.
 							$requestParamList = array("MID" => $this -> merchantIdentifier , "ORDERID" => $order_sent);
 							
+							$StatusCheckSum = getChecksumFromArray($requestParamList, $this->secret_key);
+							
+							$requestParamList['CHECKSUMHASH'] = $StatusCheckSum;
+							
 							// Call the PG's getTxnStatus() function for verifying the transaction status.
 							
 							if($this -> mode=='yes')
 							{
-								$check_status_url = 'https://pguat.paytm.com/oltp/HANDLER_INTERNAL/TXNSTATUS';
+								$check_status_url = 'https://pguat.paytm.com/oltp/HANDLER_INTERNAL/getTxnStatus';
 							}
 							else
 							{
-								$check_status_url = 'https://secure.paytm.in/oltp/HANDLER_INTERNAL/TXNSTATUS';
+								$check_status_url = 'https://secure.paytm.in/oltp/HANDLER_INTERNAL/getTxnStatus';
 							}
-							$responseParamList = callAPI($check_status_url, $requestParamList);
+							$responseParamList = callNewAPI($check_status_url, $requestParamList);
 							if($responseParamList['STATUS']=='TXN_SUCCESS' && $responseParamList['TXNAMOUNT']==$order_amount)
 							{
 								if($order -> status !=='completed'){
