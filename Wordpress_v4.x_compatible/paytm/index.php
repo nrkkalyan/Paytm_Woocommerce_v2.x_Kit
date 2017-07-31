@@ -271,7 +271,7 @@ $redirect_url = $order->get_checkout_order_received_url();
 							else
 							{
 								$this -> msg['class'] = 'error';
-								$this -> msg['message'] = "Transaction Status Query Error! Order Mismatch Occur";
+								$this -> msg['message'] = "It seems some issue in server to server communication. Kindly connect with administrator.";
 								$order -> update_status('failed');
 								$order -> add_order_note('Failed');
 								$order -> add_order_note($this->msg['message']);
