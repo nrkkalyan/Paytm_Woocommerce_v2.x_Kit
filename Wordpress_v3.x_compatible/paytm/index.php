@@ -13,7 +13,7 @@ Author: Paytm
  */
 
 add_action('plugins_loaded', 'woocommerce_paytm_init', 0);
-//vidisha changes
+
 function woocommerce_paytm_init() {
 
     if ( !class_exists( 'WC_Payment_Gateway' ) ) return;
@@ -22,7 +22,7 @@ function woocommerce_paytm_init() {
      * Localisation
      */
     load_plugin_textdomain('wc-paytm', false, dirname( plugin_basename( __FILE__ ) ) . '/languages');
-    if($_GET['msg']!=''){
+    if(isset($_GET['msg'])){
         add_action('the_content', 'paytmShowMessage');
     }
    
