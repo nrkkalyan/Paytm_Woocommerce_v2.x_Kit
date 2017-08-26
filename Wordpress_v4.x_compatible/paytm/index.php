@@ -12,7 +12,7 @@ Author: Paytm
  */
 
 add_action('plugins_loaded', 'woocommerce_paytm_init', 0);
-//vidisha changes
+
 function woocommerce_paytm_init() {
 
     if ( !class_exists( 'WC_Payment_Gateway' ) ) return;
