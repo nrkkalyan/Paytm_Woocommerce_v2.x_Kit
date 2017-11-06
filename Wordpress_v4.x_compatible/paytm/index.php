@@ -390,7 +390,7 @@ $redirect_url = $order->get_checkout_order_received_url();
 			$post_variables = Array(
             "MID" => $this -> merchantIdentifier,
             "ORDER_ID" => $order_id,
-            "CUST_ID" => $order -> billing_first_name,
+            "CUST_ID" => $email,
             "TXN_AMOUNT" => $amt,
             "CHANNEL_ID" => $this -> channel_id,
             "INDUSTRY_TYPE_ID" => $this -> industry_type,
@@ -479,7 +479,7 @@ $redirect_url = $order->get_checkout_order_received_url();
 			$paytm_args_array[] = "<input type='hidden' name='INDUSTRY_TYPE_ID' value='". $this -> industry_type ."'/>";
 			$paytm_args_array[] = "<input type='hidden' name='CHANNEL_ID' value='". $this -> channel_id ."'/>";
 			$paytm_args_array[] = "<input type='hidden' name='TXN_AMOUNT' value='". $amt ."'/>";
-			$paytm_args_array[] = "<input type='hidden' name='CUST_ID' value='". $order -> billing_first_name ."'/>";
+			$paytm_args_array[] = "<input type='hidden' name='CUST_ID' value='". $email ."'/>";
 			$paytm_args_array[] = "<input type='hidden' name='EMAIL' value='". $email ."'/>";
 			$paytm_args_array[] = "<input type='hidden' name='MOBILE_NO' value='". $mobile_no ."'/>";
 			
