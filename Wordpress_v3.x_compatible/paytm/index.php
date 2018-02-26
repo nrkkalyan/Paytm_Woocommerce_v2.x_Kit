@@ -47,11 +47,12 @@ function woocommerce_paytm_init() {
             $this -> merchantIdentifier = $this -> settings['merchantIdentifier'];
             $this -> secret_key = html_entity_decode($this -> settings['secret_key']);            
 			$this -> gateway_url = $this -> settings['gateway_url'];
+			$this -> transaction_status_url = $this -> settings['transaction_status_url'];
 			$this -> industry_type = $this -> settings['industry_type'];
 			$this -> channel_id = $this -> settings['channel_id'];
 			$this -> website = $this -> settings['website'];
             $this -> redirect_page_id = $this -> settings['redirect_page_id'];
-			$this -> mode = $this -> settings['mode'];
+			// $this -> mode = $this -> settings['mode'];
 			$this -> callbackurl = $this -> settings['callbackurl'];
 			$this -> log = $this -> settings['log'];
 			//$this -> liveurl = "https:/api.paytm.com/transact?v=2";
@@ -112,6 +113,11 @@ function woocommerce_paytm_init() {
                     'type' => 'text',
                     'description' =>  __('Given to Merchant by paytm'),
 					),
+                'transaction_status_url' => array(
+                    'title' => __('Transaction Status Url'),
+                    'type' => 'text',
+                    'description' =>__('Given to Merchant by paytm')
+                ),
 				'industry_type' => array(
                     'title' => __('Industry Type'),
                     'type' => 'text',
@@ -133,12 +139,12 @@ function woocommerce_paytm_init() {
                     'options' => $this -> get_pages('Select Page'),
                     'description' => "URL of success page"
                 ),
-				'mode' => array(
+				/*'mode' => array(
                     'title' => __('Mode'),
                     'type' => 'text',
                     'options' => 'text',
                     'description' => "Mode of transaction. (1=LIVE, 0=TEST)"
-                ),
+                ),*/
 				'log' => array(
                     'title' => __('Do you want to log'),
                     'type' => 'text',
@@ -237,15 +243,24 @@ function woocommerce_paytm_init() {
 							$requestParamList['CHECKSUMHASH'] = $StatusCheckSum;
 							
 							// Call the PG's getTxnStatus() function for verifying the transaction status.
+							/*	19751/17Jan2018	*/
+								/*if($this -> mode==0)
+								{
+									$check_status_url = 'https://pguat.paytm.com/oltp/HANDLER_INTERNAL/getTxnStatus';
+								}
+								else
+								{
+									$check_status_url = 'https://secure.paytm.in/oltp/HANDLER_INTERNAL/getTxnStatus';
+								}*/
+
+								/*if($this -> mode==0) {
+									$check_status_url = 'https://securegw-stage.paytm.in/merchant-status/getTxnStatus';
+								} else {
+									$check_status_url = 'https://securegw.paytm.in/merchant-status/getTxnStatus';
+								}*/
+								$check_status_url = $this->transaction_status_url;
+							/*	19751/17Jan2018 end	*/
 							
-							if($this -> mode==0)
-							{
-								$check_status_url = 'https://pguat.paytm.com/oltp/HANDLER_INTERNAL/getTxnStatus';
-							}
-							else
-							{
-								$check_status_url = 'https://secure.paytm.in/oltp/HANDLER_INTERNAL/getTxnStatus';
-							}
 							$responseParamList = callNewAPI($check_status_url, $requestParamList);
 							if($responseParamList['STATUS']=='TXN_SUCCESS' && $responseParamList['TXNAMOUNT']==$order_amount)
 							{
@@ -434,7 +449,7 @@ function woocommerce_paytm_init() {
 				'buyerPhoneNumber' => $order -> billing_phone,
 				'txnType' => $txntype,
 				'ptmoption' => $ptmoption,
-				'mode' => $this -> mode,
+				// 'mode' => $this -> mode,
 				'currency' => $currency,
 				'amount' => $amt,
 				'merchantIpAddress' => $ip,

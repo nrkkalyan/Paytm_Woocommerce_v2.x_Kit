@@ -45,12 +45,13 @@ function woocommerce_paytm_init() {
             $this -> description = $this -> settings['description'];
             $this -> merchantIdentifier = $this -> settings['merchantIdentifier'];
             $this -> secret_key = $this -> settings['secret_key'];            
-			//$this -> gateway_url = $this -> settings['gateway_url'];
+			$this -> gateway_url = $this -> settings['gateway_url'];
+			$this -> transaction_status_url = $this -> settings['transaction_status_url'];
 			$this -> industry_type = $this -> settings['industry_type'];
 			$this -> channel_id = $this -> settings['channel_id'];
 			$this -> website = $this -> settings['website'];
             $this -> redirect_page_id = $this -> settings['redirect_page_id'];
-			$this -> mode = $this -> settings['mode'];
+			// $this -> mode = $this -> settings['mode'];
 			$this -> callbackurl = $this -> settings['callbackurl'];
 			$this -> log = $this -> settings['log'];
 			//$this -> liveurl = "https:/api.paytm.com/transact?v=2";
@@ -105,11 +106,16 @@ function woocommerce_paytm_init() {
 					'type' => 'checkbox',
 					'label' => __('Enable Call back URL.'),
 					'default' => 'yes'),
-                /* 'gateway_url' => array(
+                 'gateway_url' => array(
                     'title' => __('Gateway URL'),
                     'type' => 'text',
                     'description' =>  __('Given to Merchant by paytm'),
-					), */
+					), 
+				'transaction_status_url' => array(
+                    'title' => __('Transaction Status Url'),
+                    'type' => 'text',
+                    'description' =>__('Given to Merchant by paytm')
+                ),
 				'industry_type' => array(
                     'title' => __('Industry Type'),
                     'type' => 'text',
@@ -131,13 +137,13 @@ function woocommerce_paytm_init() {
                     'options' => $this -> get_pages('Select Page'),
                     'description' => "URL of success page"
                 ),
-				'mode' => array(
+				/*'mode' => array(
 					'title' => __('Enable Test Mode'),
 					'type' => 'checkbox',
 					'label' => __('Select to enable Sandbox Enviroment'),
 					'description' => "Unchecked means in Production Enviroment",
 					'default' => 'no'                   
-				),
+				),*/
 				'log' => array(
 					'title' => __('Do you want to log'),
 					'type' => 'checkbox',
@@ -208,7 +214,7 @@ function woocommerce_paytm_init() {
 						error_log("Response Code = " . $_REQUEST['RESPCODE']);
 					}
 			  //  $redirect_url = ($this -> redirect_page_id=="" || $this -> redirect_page_id==0)?get_site_url() . "/":get_permalink($this -> redirect_page_id);
-$redirect_url = $order->get_checkout_order_received_url();
+				$redirect_url = $order->get_checkout_order_received_url();
 				$this -> msg['class'] = 'error';
                 $this -> msg['message'] = "Thank you for shopping with us. However, the transaction has been Failed For Reason  : " . $responseDescription;
 				if($_REQUEST['RESPCODE'] == 01) { // success
@@ -241,15 +247,23 @@ $redirect_url = $order->get_checkout_order_received_url();
 							$requestParamList['CHECKSUMHASH'] = $StatusCheckSum;
 							
 							// Call the PG's getTxnStatus() function for verifying the transaction status.
-							
-							if($this -> mode=='yes')
-							{
-								$check_status_url = 'https://pguat.paytm.com/oltp/HANDLER_INTERNAL/getTxnStatus';
-							}
-							else
-							{
-								$check_status_url = 'https://secure.paytm.in/oltp/HANDLER_INTERNAL/getTxnStatus';
-							}
+							/*	19751/17Jan2018	*/
+								/*if($this -> mode=='yes')
+								{
+									$check_status_url = 'https://pguat.paytm.com/oltp/HANDLER_INTERNAL/getTxnStatus';
+								}
+								else
+								{
+									$check_status_url = 'https://secure.paytm.in/oltp/HANDLER_INTERNAL/getTxnStatus';
+								}*/
+
+								/*if($this -> mode=='yes') {
+									$check_status_url = 'https://securegw-stage.paytm.in/merchant-status/getTxnStatus';
+								} else {
+									$check_status_url = 'https://securegw.paytm.in/merchant-status/getTxnStatus';
+								}*/
+								$check_status_url = $this->transaction_status_url;
+							/*	19751/17Jan2018 end	*/
 							$responseParamList = callNewAPI($check_status_url, $requestParamList);
 							if($responseParamList['STATUS']=='TXN_SUCCESS' && $responseParamList['TXNAMOUNT']==$order_amount)
 							{
@@ -491,14 +505,23 @@ $redirect_url = $order->get_checkout_order_received_url();
 			
 			$paytm_args_array[] = "<input type='hidden' name='txnDate' value='". date('Y-m-d H:i:s') ."'/>";
 			$paytm_args_array[] = "<input type='hidden' name='CHECKSUMHASH' value='". $checksum ."'/>";
-			if($this -> mode=='yes')
-			{
-				$gateway_url = 'https://pguat.paytm.com/oltp-web/processTransaction';
-			}
-			else
-			{
-				$gateway_url = 'https://secure.paytm.in/oltp-web/processTransaction';
-			}
+			/*	19751/17Jan2018	*/
+				/*if($this -> mode=='yes')
+				{
+					$gateway_url = 'https://pguat.paytm.com/oltp-web/processTransaction';
+				}
+				else
+				{
+					$gateway_url = 'https://secure.paytm.in/oltp-web/processTransaction';
+				}*/
+
+				/*if($this -> mode=='yes') {
+					$gateway_url = 'https://securegw-stage.paytm.in/theia/processTransaction';
+				} else {
+					$gateway_url = 'https://securegw.paytm.in/theia/processTransaction';
+				}*/
+				$gateway_url = $this->gateway_url;
+			/*	19751/17Jan2018 end	*/
             return '<form action="'.$gateway_url.'" method="post" id="paytm_payment_form">
                 ' . implode('', $paytm_args_array) . '
                 <input type="submit" class="button-alt" id="submit_paytm_payment_form" value="'.__('Pay via paytm').'" /> <a class="button cancel" href="'.$order->get_cancel_order_url().'">'.__('Cancel order &amp; restore cart').'</a>
