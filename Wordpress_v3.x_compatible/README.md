@@ -15,3 +15,12 @@ This plugin is used to integrate Paytm payment gateway with Woocommerce for Word
  3. Click on paytm to edit the settings. If you do not see paytm in the list at the top of the screen make sure you have activated the plugin in the WordPress Plugin Manager.
  4. Enable the Payment Method, name it Credit Card / Debit Card / Internet Banking (this will show up on the payment page your customer sees), add in your merchant id , secret key, paytm Gateway URL, Industry Type, ChannelID, Web Site, Return  page,   mode(0 for trial purpose and 1 for live purpose) and  Click Save.
  5. Now you can see *paytm* in your payment option.
+
+# Paytm PG URL Details
+	staging	
+		Transaction URL             => https://securegw-stage.paytm.in/theia/processTransaction
+		Transaction Status Url      => https://securegw-stage.paytm.in/merchant-status/getTxnStatus
+
+	Production
+		Transaction URL             => https://securegw.paytm.in/theia/processTransaction
+		Transaction Status Url      => https://securegw.paytm.in/merchant-status/getTxnStatus
